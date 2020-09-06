@@ -13,7 +13,9 @@ const App: FC = () => {
     ciphertext: '',
     key: '',
     filename: '',
-    opts: {},
+    opts: {
+      display: 'preserve',
+    },
   });
 
   useEffect(() => {
@@ -42,6 +44,19 @@ const App: FC = () => {
       ...formData,
       filename: file.name,
       [key]: text,
+    });
+  };
+
+  const handleOptsChange = async (e: any) => {
+    const key = e.target.dataset!.key as string;
+    const value = e.target.value as string;
+
+    setFormData({
+      ...formData,
+      opts: {
+        ...formData.opts,
+        [key]: value,
+      },
     });
   };
 
@@ -114,6 +129,10 @@ const App: FC = () => {
                 id='display-radio-preserve'
                 label='Preserve puncutation'
                 type='radio'
+                data-key='display'
+                value='preserve'
+                checked={formData.opts.display === 'preserve'}
+                onChange={handleOptsChange}
               />
               <Form.Check
                 inline
@@ -121,6 +140,10 @@ const App: FC = () => {
                 id='display-radio-group'
                 label='Group of five'
                 type='radio'
+                data-key='display'
+                value='grouped'
+                checked={formData.opts.display === 'grouped'}
+                onChange={handleOptsChange}
               />
             </div>
           </Row>
