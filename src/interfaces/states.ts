@@ -13,5 +13,6 @@ export interface AppDataState {
   plaintext: string;
   ciphertext: string;
   key: string;
+  filename: string;
   opts: OptsType;
 }

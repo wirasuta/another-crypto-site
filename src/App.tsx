@@ -3,6 +3,7 @@ import { Container, Row, Navbar, Form, Col, Button } from 'react-bootstrap';
 
 import { Vigenere } from './lib/crypto_suites/vigenere';
 import { AppDataState, CryptoSuitesState } from './interfaces';
+import { readFile, downloadAsFile } from './lib/files';
 
 const App: FC = () => {
   const [cryptoSuites, setCryptoSuites] = useState<CryptoSuitesState>({});
@@ -11,6 +12,7 @@ const App: FC = () => {
     plaintext: '',
     ciphertext: '',
     key: '',
+    filename: '',
     opts: {},
   });
 
@@ -29,6 +31,26 @@ const App: FC = () => {
       ...formData,
       [key]: value,
     });
+  };
+
+  const handleFileChange = async (e: any) => {
+    const key = e.target.dataset!.key as string;
+    const file = e.target.files[0] as File;
+    const text = await readFile(file);
+
+    setFormData({
+      ...formData,
+      filename: file.name,
+      [key]: text,
+    });
+  };
+
+  const handleDownload = (e: any) => {
+    const encFilename = formData.filename.length
+      ? formData.filename + '.enc'
+      : 'out.enc';
+
+    downloadAsFile(formData.ciphertext, encFilename);
   };
 
   const handleEncrypt = () => {
@@ -115,7 +137,11 @@ const App: FC = () => {
           <Row className='mt-3 flex-column'>
             <h5>Plaintext</h5>
             <Form.Group>
-              <Form.File id='plainFile' />
+              <Form.File
+                id='plainFile'
+                data-key='plaintext'
+                onChange={handleFileChange}
+              />
             </Form.Group>
             <Form.Group controlId='plainTextArea' className='mb-0'>
               <Form.Control
@@ -152,6 +178,9 @@ const App: FC = () => {
                 onChange={handleChange}
               />
             </Form.Group>
+            <Button variant='outline-success' block onClick={handleDownload}>
+              Download
+            </Button>
           </Row>
         </Form>
       </Container>
