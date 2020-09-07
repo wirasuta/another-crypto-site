@@ -14,12 +14,7 @@ export class Affine implements CryptoSuite {
     if (typeof plaintext !== 'string')
       throw new Error('Invalid plaintext: should be A-Z');
 
-    const [ms, bs] = key.split(',', 2);
-    const m = parseInt(ms.trim());
-    const b = parseInt(bs.trim());
-    if (!isCoprime(m, 26))
-      throw new Error('Invalid key: m should be coprime with 26');
-
+    const [m, b] = this._genCoeff(key);
     return this._affineEnc(plaintext, m, b, opts);
   }
 
@@ -27,12 +22,7 @@ export class Affine implements CryptoSuite {
     if (typeof ciphertext !== 'string')
       throw new Error('Invalid ciphertext: should be A-Z');
 
-    const [ms, bs] = key.split(',', 2);
-    const m = parseInt(ms.trim());
-    const b = parseInt(bs.trim());
-    if (!isCoprime(m, 26))
-      throw new Error('Invalid key: m should be coprime with 26');
-
+    const [m, b] = this._genCoeff(key);
     return this._affineDec(ciphertext, m, b, opts);
   }
 
@@ -79,11 +69,22 @@ export class Affine implements CryptoSuite {
         continue;
       }
 
-      const cr = (minv * pmod(ch - b, 26)) % 26;
+      const cr = pmod(minv * (ch - b), 26);
       res.push(b26toc(cr));
     }
 
     let resText = res.join('');
     return resText;
+  }
+
+  private _genCoeff(s: string) {
+    const [ms, bs] = s.split(',', 2);
+    const m = parseInt(ms.trim());
+    const b = parseInt(bs.trim());
+
+    if (!isCoprime(m, 26))
+      throw new Error('Invalid key: m should be coprime with 26');
+
+    return [m, b];
   }
 }

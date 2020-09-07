@@ -1,15 +1,16 @@
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC, useState } from 'react';
 import { Container, Row, Navbar, Form, Col, Button } from 'react-bootstrap';
 
 import { AppDataState } from './interfaces';
 import { useCryptoSuites } from './lib/crypto_suites';
 import { readFile, downloadAsFile } from './lib/files';
+import KeyInput from './components/KeyInput';
+import OptsInput from './components/OptsInput';
 
 const App: FC = () => {
   const cryptoSuites = useCryptoSuites();
   const [formData, setFormData] = useState<AppDataState>({
     suite: '',
-    key_info: '',
     plaintext: '',
     ciphertext: '',
     key: '',
@@ -18,33 +19,6 @@ const App: FC = () => {
       display: 'preserve',
     },
   });
-
-  useEffect(() => {
-    switch (formData.suite) {
-      case 'vigenere':
-        setFormData({ ...formData, key_info: 'Input key in uppercase' });
-        break;
-      case 'affine':
-        setFormData({
-          ...formData,
-          key_info: 'Input key in "<a>, <b>" format. E(x) = ax + b (mod 26)',
-        });
-        break;
-      case 'hill':
-        setFormData({
-          ...formData,
-          key_info: 'Input key in "<abc>, <def>, <ghi>" format',
-        });
-        break;
-      default:
-        setFormData({
-          ...formData,
-          key_info: '',
-        });
-        break;
-    }
-    // eslint-disable-next-line
-  }, [formData.suite]);
 
   const handleChange = (e: any) => {
     // TODO: Validate
@@ -69,16 +43,10 @@ const App: FC = () => {
     });
   };
 
-  const handleOptsChange = async (e: any) => {
-    const key = e.target.dataset!.key as string;
-    const value = e.target.value as string;
-
+  const handleOptsChange = (opts: any) => {
     setFormData({
       ...formData,
-      opts: {
-        ...formData.opts,
-        [key]: value,
-      },
+      opts,
     });
   };
 
@@ -143,46 +111,18 @@ const App: FC = () => {
             </Form.Control>
           </Row>
           <Row className='mt-3 flex-column'>
-            <h5>Cipher options</h5>
-            <div>
-              <Form.Check
-                inline
-                name='displayRadios'
-                id='display-radio-preserve'
-                label='Preserve puncutation'
-                type='radio'
-                data-key='display'
-                value='preserve'
-                checked={formData.opts.display === 'preserve'}
-                onChange={handleOptsChange}
-              />
-              <Form.Check
-                inline
-                name='displayRadios'
-                id='display-radio-group'
-                label='Group of five'
-                type='radio'
-                data-key='display'
-                value='grouped'
-                checked={formData.opts.display === 'grouped'}
-                onChange={handleOptsChange}
-              />
-            </div>
+            <OptsInput
+              initialOpts={formData.opts}
+              suite={formData.suite}
+              onChange={handleOptsChange}
+            />
           </Row>
           <Row className='mt-3 flex-column'>
-            <h5>Key</h5>
-            <Form.Group controlId='key' className='mb-0'>
-              <Form.Control
-                data-key='key'
-                value={formData.key}
-                onChange={handleChange}
-              />
-              {formData.key_info && (
-                <Form.Text className='text-muted'>
-                  {formData.key_info}
-                </Form.Text>
-              )}
-            </Form.Group>
+            <KeyInput
+              suite={formData.suite}
+              value={formData.key}
+              onChange={handleChange}
+            />
           </Row>
           <Row className='mt-3 flex-column'>
             <h5>Plaintext</h5>
@@ -190,7 +130,13 @@ const App: FC = () => {
               <Form.File
                 id='plainFile'
                 data-key='plaintext'
+                label={
+                  formData.filename.length
+                    ? formData.filename
+                    : 'Choose plaintext file'
+                }
                 onChange={handleFileChange}
+                custom
               />
             </Form.Group>
             <Form.Group controlId='plainTextArea' className='mb-0'>
@@ -205,13 +151,27 @@ const App: FC = () => {
           </Row>
           <hr />
           <Row>
-            <Col>
-              <Button variant='outline-primary' block onClick={handleEncrypt}>
+            <Col className='pl-0'>
+              <Button
+                variant='outline-primary'
+                block
+                disabled={
+                  !formData.key || !formData.plaintext || !formData.suite
+                }
+                onClick={handleEncrypt}
+              >
                 Encrypt
               </Button>
             </Col>
-            <Col>
-              <Button variant='outline-success' block onClick={handleDecrypt}>
+            <Col className='pr-0'>
+              <Button
+                variant='outline-success'
+                block
+                disabled={
+                  !formData.key || !formData.ciphertext || !formData.suite
+                }
+                onClick={handleDecrypt}
+              >
                 Decrypt
               </Button>
             </Col>
