@@ -4,7 +4,7 @@
      [g h i]]    [z]]
 */
 
-import { modinv, pmod } from './utils';
+import { modinv, pmod, ctob26 } from './utils';
 
 export const multiplyMatrix = (m: number[][], n: number[][]) => {
   if (m[0].length !== n.length) throw new Error('Invalid matrix size');
@@ -91,4 +91,13 @@ export const detMatrix3x3 = (m: number[][]) => {
     m[0][1] * -1 * (m[1][0] * m[2][2] - m[2][0] * m[1][2]) +
     m[0][2] * (m[1][0] * m[2][1] - m[2][0] * m[1][1])
   );
+};
+
+export const strToB26Col = (s: string) => {
+  const m = [];
+  for (let i = 0; i < s.length; i++) {
+    m.push([ctob26(s[i])]);
+  }
+
+  return m;
 };

@@ -30,6 +30,12 @@ const App: FC = () => {
           key_info: 'Input key in "<a>, <b>" format. E(x) = ax + b (mod 26)',
         });
         break;
+      case 'hill':
+        setFormData({
+          ...formData,
+          key_info: 'Input key in "<abc>, <def>, <ghi>" format',
+        });
+        break;
       default:
         setFormData({
           ...formData,
