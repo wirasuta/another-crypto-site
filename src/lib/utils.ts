@@ -6,6 +6,10 @@ export const b26toc = (charcode: number, baseChar: string = 'A') => {
   return String.fromCharCode(charcode + baseChar.charCodeAt(0));
 };
 
+export const removeNonUppercase = (text: string) => {
+  return text.replace(/[^A-Z]/g, '').trim();
+};
+
 export const groupByFive = (text: string) => {
   return text.replace(/(.{5})/g, '$1 ').trim();
 };

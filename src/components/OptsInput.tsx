@@ -32,12 +32,12 @@ const OptsInput: FC<OptsInputState> = ({ initialOpts, onChange }) => {
         <Form.Check
           inline
           name='displayRadios'
-          id='display-radio-preserve'
-          label='Preserve puncutation'
+          id='display-radio-no-space'
+          label='No space'
           type='radio'
           data-key='display'
-          value='preserve'
-          checked={opts.display === 'preserve'}
+          value='no-space'
+          checked={opts.display === 'no-space'}
           onChange={handleOptsChange}
         />
         <Form.Check

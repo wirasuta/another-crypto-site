@@ -7,6 +7,7 @@ import {
   modinv,
   ungroupByFive,
   pmod,
+  removeNonUppercase,
 } from '../utils';
 
 export class Affine implements CryptoSuite {
@@ -15,7 +16,8 @@ export class Affine implements CryptoSuite {
       throw new Error('Invalid plaintext: should be A-Z');
 
     const [m, b] = this._genCoeff(key);
-    return this._affineEnc(plaintext, m, b, opts);
+    const text = removeNonUppercase(plaintext);
+    return this._enc(text, m, b, opts);
   }
 
   decrypt(ciphertext: string | ArrayBuffer, key: string, opts: any) {
@@ -23,22 +25,16 @@ export class Affine implements CryptoSuite {
       throw new Error('Invalid ciphertext: should be A-Z');
 
     const [m, b] = this._genCoeff(key);
-    return this._affineDec(ciphertext, m, b, opts);
+    const text = removeNonUppercase(ciphertext);
+    return this._dec(text, m, b, opts);
   }
 
-  private _affineEnc(plaintext: string, m: number, b: number, opts: any) {
-    const preserve = opts.display === 'preserve';
+  private _enc(plaintext: string, m: number, b: number, opts: any) {
     const grouped = opts.display === 'grouped';
     const res = [];
 
     for (let i = 0; i < plaintext.length; i++) {
       const ch = ctob26(plaintext[i]);
-
-      if (preserve && (ch < 0 || ch > 25)) {
-        res.push(plaintext[i]);
-        continue;
-      }
-
       const cr = (m * ch + b) % 26;
       res.push(b26toc(cr));
     }
@@ -51,8 +47,7 @@ export class Affine implements CryptoSuite {
     return resText;
   }
 
-  private _affineDec(ciphertext: string, m: number, b: number, opts: any) {
-    const preserve = opts.display === 'preserve';
+  private _dec(ciphertext: string, m: number, b: number, opts: any) {
     const grouped = opts.display === 'grouped';
     const minv = modinv(m, 26);
     const res = [];
@@ -63,12 +58,6 @@ export class Affine implements CryptoSuite {
 
     for (let i = 0; i < ciphertext.length; i++) {
       const ch = ctob26(ciphertext[i]);
-
-      if (preserve && (ch < 0 || ch > 25)) {
-        res.push(ciphertext[i]);
-        continue;
-      }
-
       const cr = pmod(minv * (ch - b), 26);
       res.push(b26toc(cr));
     }

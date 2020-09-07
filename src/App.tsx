@@ -16,7 +16,7 @@ const App: FC = () => {
     key: '',
     filename: '',
     opts: {
-      display: 'preserve',
+      display: 'no-space',
     },
   });
 
