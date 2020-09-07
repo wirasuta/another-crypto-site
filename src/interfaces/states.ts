@@ -10,6 +10,7 @@ export interface CryptoSuitesState {
 
 export interface AppDataState {
   suite: string;
+  key_info: string;
   plaintext: string;
   ciphertext: string;
   key: string;

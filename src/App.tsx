@@ -1,14 +1,15 @@
 import React, { FC, useState, useEffect } from 'react';
 import { Container, Row, Navbar, Form, Col, Button } from 'react-bootstrap';
 
-import { Vigenere } from './lib/crypto_suites/vigenere';
-import { AppDataState, CryptoSuitesState } from './interfaces';
+import { AppDataState } from './interfaces';
+import { useCryptoSuites } from './lib/crypto_suites';
 import { readFile, downloadAsFile } from './lib/files';
 
 const App: FC = () => {
-  const [cryptoSuites, setCryptoSuites] = useState<CryptoSuitesState>({});
+  const cryptoSuites = useCryptoSuites();
   const [formData, setFormData] = useState<AppDataState>({
     suite: '',
+    key_info: '',
     plaintext: '',
     ciphertext: '',
     key: '',
@@ -19,10 +20,25 @@ const App: FC = () => {
   });
 
   useEffect(() => {
-    setCryptoSuites({
-      vigenere: new Vigenere(),
-    });
-  }, []);
+    switch (formData.suite) {
+      case 'vigenere':
+        setFormData({ ...formData, key_info: 'Input key in uppercase' });
+        break;
+      case 'affine':
+        setFormData({
+          ...formData,
+          key_info: 'Input key in "<a>, <b>" format. E(x) = ax + b (mod 26)',
+        });
+        break;
+      default:
+        setFormData({
+          ...formData,
+          key_info: '',
+        });
+        break;
+    }
+    // eslint-disable-next-line
+  }, [formData.suite]);
 
   const handleChange = (e: any) => {
     // TODO: Validate
@@ -155,6 +171,11 @@ const App: FC = () => {
                 value={formData.key}
                 onChange={handleChange}
               />
+              {formData.key_info && (
+                <Form.Text className='text-muted'>
+                  {formData.key_info}
+                </Form.Text>
+              )}
             </Form.Group>
           </Row>
           <Row className='mt-3 flex-column'>

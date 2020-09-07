@@ -13,3 +13,31 @@ export const groupByFive = (text: string) => {
 export const ungroupByFive = (text: string) => {
   return text.replace(/ /g, '').trim();
 };
+
+export const gcd = (a: number, b: number): number => {
+  if (b === 0) return a;
+  else return gcd(b, a % b);
+};
+
+export const egcd = (a: number, b: number): number[] => {
+  if (b === 0) {
+    return [a, 1, 0];
+  }
+
+  const [gcd, x1, y1] = egcd(b, a % b);
+  const y = x1 - Math.floor(a / b) * y1;
+  const x = y1;
+
+  return [gcd, x, y];
+};
+
+export const modinv = (a: number, m: number) => {
+  const [gcd, x] = egcd(a, m);
+
+  if (gcd !== 1) return 0;
+  else return ((x % m) + m) % m;
+};
+
+export const isCoprime = (a: number, b: number) => {
+  return gcd(a, b) === 1;
+};
