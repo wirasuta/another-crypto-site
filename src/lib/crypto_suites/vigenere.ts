@@ -1,5 +1,5 @@
 import { CryptoSuite } from '../../interfaces';
-import { ctob26, b26toc, groupByFive, ungroupByFive } from '../utils';
+import { ctob26, b26toc, groupByFive, ungroupByFive, pmod } from '../utils';
 
 export class Vigenere implements CryptoSuite {
   encrypt(plaintext: string | ArrayBuffer, key: string, opts: any) {
@@ -44,7 +44,7 @@ export class Vigenere implements CryptoSuite {
       }
 
       const ad = ctob26(key[i % keyLen]);
-      const cr = encrypt ? (ch + ad) % 26 : (((ch - ad) % 26) + 26) % 26;
+      const cr = encrypt ? (ch + ad) % 26 : pmod(ch - ad, 26);
       res.push(b26toc(cr));
     }
 

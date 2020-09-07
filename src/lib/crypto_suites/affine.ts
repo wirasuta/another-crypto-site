@@ -6,6 +6,7 @@ import {
   b26toc,
   modinv,
   ungroupByFive,
+  pmod,
 } from '../utils';
 
 export class Affine implements CryptoSuite {
@@ -78,7 +79,7 @@ export class Affine implements CryptoSuite {
         continue;
       }
 
-      const cr = (minv * (((ch - b) % 26) + 26)) % 26;
+      const cr = (minv * pmod(ch - b, 26)) % 26;
       res.push(b26toc(cr));
     }
 

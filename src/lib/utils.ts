@@ -31,11 +31,15 @@ export const egcd = (a: number, b: number): number[] => {
   return [gcd, x, y];
 };
 
+export const pmod = (a: number, m: number) => ((a % m) + m) % m;
+
 export const modinv = (a: number, m: number) => {
+  if (a < 0) a = pmod(a, m);
+
   const [gcd, x] = egcd(a, m);
 
   if (gcd !== 1) return 0;
-  else return ((x % m) + m) % m;
+  else return pmod(x, m);
 };
 
 export const isCoprime = (a: number, b: number) => {
