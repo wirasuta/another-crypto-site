@@ -29,10 +29,16 @@ const App: FC = () => {
     const key = e.target.dataset!.key as string;
     const isEncrypt = key === 'ciphertext';
     const isDecrypt = key === 'plaintext';
-    const isbinarykey = isEncrypt ? 'isCipherBinary'
-      : isDecrypt ? 'isPlainBinary' : '';
-    const filenamekey = isEncrypt ? 'cipherfilename'
-      : isDecrypt ? 'filename' : '';
+    const isbinarykey = isEncrypt
+      ? 'isCipherBinary'
+      : isDecrypt
+      ? 'isPlainBinary'
+      : '';
+    const filenamekey = isEncrypt
+      ? 'cipherfilename'
+      : isDecrypt
+      ? 'filename'
+      : '';
 
     setFormData({
       ...formData,
@@ -55,7 +61,7 @@ const App: FC = () => {
       ...formData,
       [filenamekey]: file.name,
       [key]: text,
-      [isbinarykey]: isBinary
+      [isbinarykey]: isBinary,
     });
   };
 
@@ -70,12 +76,15 @@ const App: FC = () => {
     const key = e.target.dataset!.key as string;
     const isEncrypt = key === 'ciphertext';
     const isBinary = formData.suite === 'vigenere_ext';
-    let encFilename = formData.filename.length
-      ? formData.filename
-      : 'out';
+    let encFilename = formData.filename.length ? formData.filename : 'out';
     encFilename = encFilename + (isBinary && !isEncrypt ? '' : '.enc');
 
-    downloadAsFile(isEncrypt ? formData.ciphertext : formData.plaintext, encFilename, isEncrypt, isBinary);
+    downloadAsFile(
+      isEncrypt ? formData.ciphertext : formData.plaintext,
+      encFilename,
+      isEncrypt,
+      isBinary
+    );
   };
 
   const handleEncrypt = () => {
@@ -122,8 +131,8 @@ const App: FC = () => {
             >
               <option>Chose cipher suite...</option>
               <option value='vigenere'>Vigenere</option>
-              <option value='vigenere-full'>Full Vigenere</option>
-              <option value='vigenere-auto'>Auto-Key Vigenere</option>
+              <option value='vigenere_full'>Full Vigenere</option>
+              <option value='vigenere_auto'>Auto-Key Vigenere</option>
               <option value='vigenere_ext'>Extended Vigenere</option>
               <option value='playfair'>Playfair</option>
               <option value='super'>Super (Vigenere + Transposition)</option>
@@ -168,11 +177,18 @@ const App: FC = () => {
                 data-key='plaintext'
                 rows={3}
                 value={!formData.isPlainBinary ? formData.plaintext : ''}
-                placeholder={'Type your plaintext here (binary file is not displayed)'}
+                placeholder={
+                  'Type your plaintext here (binary file is not displayed)'
+                }
                 onChange={handleChange}
               />
             </Form.Group>
-            <Button data-key='plaintext' variant='outline-success' block onClick={handleDownload}>
+            <Button
+              data-key='plaintext'
+              variant='outline-success'
+              block
+              onClick={handleDownload}
+            >
               Download
             </Button>
           </Row>
@@ -226,11 +242,18 @@ const App: FC = () => {
                 data-key='ciphertext'
                 rows={3}
                 value={!formData.isCipherBinary ? formData.ciphertext : ''}
-                placeholder={'Type your plaintext here (binary file is not displayed)'}
+                placeholder={
+                  'Type your plaintext here (binary file is not displayed)'
+                }
                 onChange={handleChange}
               />
             </Form.Group>
-            <Button data-key='ciphertext' variant='outline-success' block onClick={handleDownload}>
+            <Button
+              data-key='ciphertext'
+              variant='outline-success'
+              block
+              onClick={handleDownload}
+            >
               Download
             </Button>
           </Row>
