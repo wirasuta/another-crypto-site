@@ -35,13 +35,41 @@ export class Super implements CryptoSuite {
     encrypt: boolean,
     opts: any
   ) {
-    const keyLen = key.length;
     const grouped = opts.display === 'grouped';
-    const vigenereRes = [];
+    let vigenereRes = [];
+    let superRes = [];
+    let resText = '';
 
     if (grouped && !encrypt) {
       plaintext = ungroupByFive(plaintext);
     }
+
+    if (encrypt) {
+      vigenereRes = this._vigenereBase26(plaintext, key, encrypt);
+      console.log('vig', vigenereRes);
+      superRes = this._transpose(vigenereRes, encrypt);
+      resText = superRes.join('');
+    } else {
+      superRes = this._transpose(plaintext.split(''), encrypt);
+      const superResText = superRes.join('').replace(/Z*$/g, '');
+      vigenereRes = this._vigenereBase26(superResText, key, encrypt);
+      resText = vigenereRes.join('');
+    }
+
+    if (grouped && encrypt) {
+      resText = groupByFive(resText);
+    }
+
+    return resText;
+  }
+
+  private _vigenereBase26(
+    plaintext: string,
+    key: string,
+    encrypt: boolean
+  ) {
+    const keyLen = key.length;
+    const vigenereRes = [];
 
     for (let i = 0; i < plaintext.length; i++) {
       const ch = ctob26(plaintext[i]);
@@ -50,28 +78,32 @@ export class Super implements CryptoSuite {
       vigenereRes.push(b26toc(cr));
     }
 
-    const textRemainder = vigenereRes.length % 6;
+    return vigenereRes;
+  }
+
+  private _transpose(
+    text: Array<string>,
+    encrypt: boolean
+  ): Array<string> {
+    const textRemainder = text.length % 6;
     if (textRemainder !== 0) {
       for (let i = 0; i < 6 - textRemainder; i++)
-        vigenereRes.push('Z');
+        text.push('Z');
     }
 
-    const vigenereText = vigenereRes.join('').match(/.{1,6}/g) || [];
+    const colNum = encrypt ? 6 : Math.ceil(text.length / 6);
+    const regex = new RegExp(`.{1,${colNum}}`, 'g');
+    const vigenereArr = text.join('').match(regex) || [];
 
     let superRes = [];
-    for (let i = 0; i < 6; i++) {
+    for (let i = 0; i < colNum; i++) {
       const column = [];
-      for (let j = 0; j < vigenereText.length; j++) {
-        column.push(vigenereText[j][i]);
+      for (let j = 0; j < vigenereArr.length; j++) {
+        column.push(vigenereArr[j][i]);
       }
       superRes.push(column.join(''));
     }
 
-    let resText = superRes.join('');
-    if (grouped && encrypt) {
-      resText = groupByFive(resText);
-    }
-
-    return resText;
+    return superRes || [];
   }
 }
