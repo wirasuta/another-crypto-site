@@ -82,16 +82,20 @@ export class VigenereFull implements CryptoSuite {
   }
 
   private _genTable(s: string) {
-    const ss = removeNonUppercase(s);
-    const table = ss.split(',', 26);
+    const table = s.split(',', 26);
 
     if (table.length !== 26) throw new Error('Invalid full vignere table');
     for (let i = 0; i < table.length; i++) {
+      table[i] = removeNonUppercase(table[i].trim());
       if (table[i].length !== 26) throw new Error('Invalid full vignere table');
     }
+    if (!this._checkUniqueTable) throw new Error('Invalid full vignere table');
 
-    // TODO: Check for uniqueness
     return table;
+  }
+
+  private _checkUniqueTable(t: string[]) {
+    return new Set(t).size === t.length;
   }
 
   private _findOriginalChar(r: string, ch: number) {

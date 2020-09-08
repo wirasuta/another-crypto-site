@@ -7,7 +7,7 @@ interface OptsInputState {
   onChange: (opts: any) => void;
 }
 
-const OptsInput: FC<OptsInputState> = ({ initialOpts, onChange }) => {
+const OptsInput: FC<OptsInputState> = ({ initialOpts, suite, onChange }) => {
   const [opts, setOpts] = useState(initialOpts);
 
   useEffect(() => {
@@ -51,6 +51,32 @@ const OptsInput: FC<OptsInputState> = ({ initialOpts, onChange }) => {
           checked={opts.display === 'grouped'}
           onChange={handleOptsChange}
         />
+        {suite === 'hill' && (
+          <Form.Group controlId='hillPadding' className='mt-2 mb-0'>
+            <Form.Control
+              data-key='padding'
+              placeholder={
+                'Type one uppercase character as padding (default X)'
+              }
+              value={opts.padding}
+              onChange={handleOptsChange}
+            />
+          </Form.Group>
+        )}
+        {suite === 'vigenere_full' && (
+          <Form.Group controlId='fullVigenereTableArea' className='mt-2 mb-0'>
+            <Form.Control
+              as='textarea'
+              data-key='table'
+              rows={3}
+              value={opts.table ? opts.table : ''}
+              placeholder={
+                'Type your full vigenere table with rows separated by coma'
+              }
+              onChange={handleOptsChange}
+            />
+          </Form.Group>
+        )}
       </div>
     </>
   );
