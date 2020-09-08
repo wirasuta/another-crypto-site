@@ -6,6 +6,14 @@ export const b26toc = (charcode: number, baseChar: string = 'A') => {
   return String.fromCharCode(charcode + baseChar.charCodeAt(0));
 };
 
+export const ctob256 = (char: string) => {
+  return char.charCodeAt(0);
+};
+
+export const b256toc = (charcode: number) => {
+  return String.fromCharCode(charcode);
+};
+
 export const removeNonUppercase = (text: string) => {
   return text.replace(/[^A-Z]/g, '').trim();
 };
@@ -49,3 +57,7 @@ export const modinv = (a: number, m: number) => {
 export const isCoprime = (a: number, b: number) => {
   return gcd(a, b) === 1;
 };
+
+export const splice = (originalText: string, idx: number, text: string) => {
+  return [originalText.slice(0, idx), text, originalText.slice(idx)].join('')
+}

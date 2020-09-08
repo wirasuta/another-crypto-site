@@ -102,7 +102,7 @@ const App: FC = () => {
               <option value='vigenere'>Vigenere</option>
               <option value='vigenere-full'>Full Vigenere</option>
               <option value='vigenere-auto'>Auto-Key Vigenere</option>
-              <option value='vigenere-ext'>Extended Vigenere</option>
+              <option value='vigenere_ext'>Extended Vigenere</option>
               <option value='playfair'>Playfair</option>
               <option value='super'>Super (Vigenere + Transposition)</option>
               <option value='affine'>Affine</option>
