@@ -11,19 +11,13 @@ import {
 } from '../utils';
 
 export class Affine implements CryptoSuite {
-  encrypt(plaintext: string | ArrayBuffer, key: string, opts: any) {
-    if (typeof plaintext !== 'string')
-      throw new Error('Invalid plaintext: should be A-Z');
-
+  encrypt(plaintext: string, key: string, opts: any) {
     const [m, b] = this._genCoeff(key);
     const text = removeNonUppercase(plaintext);
     return this._enc(text, m, b, opts);
   }
 
-  decrypt(ciphertext: string | ArrayBuffer, key: string, opts: any) {
-    if (typeof ciphertext !== 'string')
-      throw new Error('Invalid ciphertext: should be A-Z');
-
+  decrypt(ciphertext: string, key: string, opts: any) {
     const [m, b] = this._genCoeff(key);
     const text = removeNonUppercase(ciphertext);
     return this._dec(text, m, b, opts);

@@ -1,29 +1,13 @@
 import { CryptoSuite } from '../../interfaces';
-import {
-  ctob256,
-  b256toc,
-  groupByFive,
-  ungroupByFive,
-  pmod,
-} from '../utils';
+import { ctob256, b256toc, groupByFive, ungroupByFive, pmod } from '../utils';
 
 export class VigenereExt implements CryptoSuite {
-  encrypt(plaintext: string | ArrayBuffer, key: string, opts: any) {
-    if (typeof plaintext === 'string') {
-      return this._vigenereBase256(plaintext, key, true, opts);
-    } else {
-      // TODO: Handle binary
-      return '';
-    }
+  encrypt(plaintext: string, key: string, opts: any) {
+    return this._vigenereBase256(plaintext, key, true, opts);
   }
 
-  decrypt(ciphertext: string | ArrayBuffer, key: string, opts: any) {
-    if (typeof ciphertext === 'string') {
-      return this._vigenereBase256(ciphertext, key, false, opts);
-    } else {
-      // TODO: Handle binary
-      return '';
-    }
+  decrypt(ciphertext: string, key: string, opts: any) {
+    return this._vigenereBase256(ciphertext, key, false, opts);
   }
 
   private _vigenereBase256(

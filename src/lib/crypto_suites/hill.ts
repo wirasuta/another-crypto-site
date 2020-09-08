@@ -9,19 +9,13 @@ import {
 import { strToB26Col, modMultiplyMatrix, modinvMatrix3x3 } from '../matrix';
 
 export class Hill implements CryptoSuite {
-  encrypt(plaintext: string | ArrayBuffer, key: string, opts: any) {
-    if (typeof plaintext !== 'string')
-      throw new Error('Invalid plaintext: should be A-Z');
-
+  encrypt(plaintext: string, key: string, opts: any) {
     const keyMatrix = this._genKeyMatrix(key);
     const text = removeNonUppercase(plaintext);
     return this._enc(text, keyMatrix, opts);
   }
 
-  decrypt(ciphertext: string | ArrayBuffer, key: string, opts: any) {
-    if (typeof ciphertext !== 'string')
-      throw new Error('Invalid plaintext: should be A-Z');
-
+  decrypt(ciphertext: string, key: string, opts: any) {
     const keyMatrix = this._genKeyMatrix(key);
     const text = removeNonUppercase(ciphertext);
     return this._dec(text, keyMatrix, opts);

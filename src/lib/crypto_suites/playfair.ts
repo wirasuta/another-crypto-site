@@ -8,33 +8,19 @@ import {
 } from '../utils';
 
 export class Playfair implements CryptoSuite {
-  encrypt(plaintext: string | ArrayBuffer, key: string, opts: any) {
-    if (typeof plaintext === 'string') {
-      const text = removeNonUppercase(plaintext);
-      key = removeNonUppercase(key);
-      return this._enc(text, key, opts);
-    } else {
-      // TODO: Handle binary
-      return '';
-    }
+  encrypt(plaintext: string, key: string, opts: any) {
+    const text = removeNonUppercase(plaintext);
+    key = removeNonUppercase(key);
+    return this._enc(text, key, opts);
   }
 
-  decrypt(ciphertext: string | ArrayBuffer, key: string, opts: any) {
-    if (typeof ciphertext === 'string') {
-      const text = removeNonUppercase(ciphertext);
-      key = removeNonUppercase(key);
-      return this._dec(text, key, opts);
-    } else {
-      // TODO: Handle binary
-      return '';
-    }
+  decrypt(ciphertext: string, key: string, opts: any) {
+    const text = removeNonUppercase(ciphertext);
+    key = removeNonUppercase(key);
+    return this._dec(text, key, opts);
   }
 
-  private _enc(
-    plaintext: string,
-    key: string,
-    opts: any
-  ) {
+  private _enc(plaintext: string, key: string, opts: any) {
     const grouped = opts.display === 'grouped';
 
     const keyMatrix = this._generateKeyMatrix(key);
@@ -56,7 +42,9 @@ export class Playfair implements CryptoSuite {
         pos2 = [pos2[0], colPos1];
       }
 
-      return this._getPosChar(pos1, keyMatrix) + this._getPosChar(pos2, keyMatrix);
+      return (
+        this._getPosChar(pos1, keyMatrix) + this._getPosChar(pos2, keyMatrix)
+      );
     });
 
     let resText = encryptedText ? encryptedText.join('') : '';
@@ -67,11 +55,7 @@ export class Playfair implements CryptoSuite {
     return resText;
   }
 
-  private _dec(
-    plaintext: string,
-    key: string,
-    opts: any
-  ) {
+  private _dec(plaintext: string, key: string, opts: any) {
     const grouped = opts.display === 'grouped';
     if (grouped) {
       plaintext = ungroupByFive(plaintext);
@@ -96,7 +80,9 @@ export class Playfair implements CryptoSuite {
         pos2 = [pos2[0], colPos1];
       }
 
-      return this._getPosChar(pos1, keyMatrix) + this._getPosChar(pos2, keyMatrix);
+      return (
+        this._getPosChar(pos1, keyMatrix) + this._getPosChar(pos2, keyMatrix)
+      );
     });
 
     let resText = encryptedText ? encryptedText.join('') : '';
@@ -105,22 +91,24 @@ export class Playfair implements CryptoSuite {
   }
 
   private _getUniqueOccr = (text: string) => {
-    return text.split('')
+    return text
+      .split('')
       .filter((item, pos, self) => {
         return self.indexOf(item) === pos;
       })
       .join('');
-  }
+  };
 
   private _getMissingOccr = (text: string) => {
     const alphabets = 'ABCDEFGHIKLMNOPQRSTUVWXYZ'; // Without J
 
-    return alphabets.split('')
+    return alphabets
+      .split('')
       .filter((item) => {
         return text.indexOf(item) < 0;
       })
       .join('');
-  }
+  };
 
   private _generateKeyMatrix = (text: string) => {
     const replacedText = text.replace(/[J]/g, '');
@@ -128,7 +116,7 @@ export class Playfair implements CryptoSuite {
     const matrixContent = uniqueOccr.concat(this._getMissingOccr(uniqueOccr));
 
     return matrixContent;
-  }
+  };
 
   private _handlePlainText = (text: string) => {
     let replacedText = text.replace(/[J]/g, 'I');
@@ -142,13 +130,13 @@ export class Playfair implements CryptoSuite {
       replacedText = splice(replacedText, replacedText.length, 'X');
 
     return replacedText.match(/.{1,2}/g);
-  }
+  };
 
   private _getCharPos = (char: string, key: string) => {
     return [Math.floor(key.indexOf(char) / 5), key.indexOf(char) % 5];
-  }
+  };
 
   private _getPosChar = (pos: Array<number>, key: string) => {
     return key[pos[0] * 5 + pos[1]];
-  }
+  };
 }

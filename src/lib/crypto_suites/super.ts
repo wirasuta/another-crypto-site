@@ -9,24 +9,14 @@ import {
 } from '../utils';
 
 export class Super implements CryptoSuite {
-  encrypt(plaintext: string | ArrayBuffer, key: string, opts: any) {
-    if (typeof plaintext === 'string') {
-      const text = removeNonUppercase(plaintext);
-      return this._superBase26(text, key, true, opts);
-    } else {
-      // TODO: Handle binary
-      return '';
-    }
+  encrypt(plaintext: string, key: string, opts: any) {
+    const text = removeNonUppercase(plaintext);
+    return this._superBase26(text, key, true, opts);
   }
 
-  decrypt(ciphertext: string | ArrayBuffer, key: string, opts: any) {
-    if (typeof ciphertext === 'string') {
-      const text = removeNonUppercase(ciphertext);
-      return this._superBase26(text, key, false, opts);
-    } else {
-      // TODO: Handle binary
-      return '';
-    }
+  decrypt(ciphertext: string, key: string, opts: any) {
+    const text = removeNonUppercase(ciphertext);
+    return this._superBase26(text, key, false, opts);
   }
 
   private _superBase26(
@@ -62,11 +52,7 @@ export class Super implements CryptoSuite {
     return resText;
   }
 
-  private _vigenereBase26(
-    plaintext: string,
-    key: string,
-    encrypt: boolean
-  ) {
+  private _vigenereBase26(plaintext: string, key: string, encrypt: boolean) {
     const keyLen = key.length;
     const vigenereRes = [];
 
@@ -80,14 +66,10 @@ export class Super implements CryptoSuite {
     return vigenereRes;
   }
 
-  private _transpose(
-    text: Array<string>,
-    encrypt: boolean
-  ): Array<string> {
+  private _transpose(text: Array<string>, encrypt: boolean): Array<string> {
     const textRemainder = text.length % 6;
     if (textRemainder !== 0) {
-      for (let i = 0; i < 6 - textRemainder; i++)
-        text.push('Z');
+      for (let i = 0; i < 6 - textRemainder; i++) text.push('Z');
     }
 
     const colNum = encrypt ? 6 : Math.ceil(text.length / 6);
