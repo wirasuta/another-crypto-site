@@ -24,11 +24,16 @@ const App: FC = () => {
   });
 
   const handleChange = (e: any) => {
-    // TODO: Validate
-    const value = e.target.value as string;
+    let value = e.target.value as string;
     const key = e.target.dataset!.key as string;
+    const isKey = key === 'key';
     const isEncrypt = key === 'ciphertext';
     const isDecrypt = key === 'plaintext';
+
+    if (isKey || isEncrypt || isDecrypt) {
+      value = value.toUpperCase();
+    }
+
     const isbinarykey = isEncrypt
       ? 'isCipherBinary'
       : isDecrypt
