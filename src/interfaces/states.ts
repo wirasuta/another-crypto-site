@@ -14,5 +14,8 @@ export interface AppDataState {
   ciphertext: string;
   key: string;
   filename: string;
+  cipherfilename: string;
+  isPlainBinary: boolean;
+  isCipherBinary: boolean;
   opts: OptsType;
 }

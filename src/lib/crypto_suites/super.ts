@@ -46,7 +46,6 @@ export class Super implements CryptoSuite {
 
     if (encrypt) {
       vigenereRes = this._vigenereBase26(plaintext, key, encrypt);
-      console.log('vig', vigenereRes);
       superRes = this._transpose(vigenereRes, encrypt);
       resText = superRes.join('');
     } else {

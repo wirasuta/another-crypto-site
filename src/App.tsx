@@ -15,6 +15,9 @@ const App: FC = () => {
     ciphertext: '',
     key: '',
     filename: '',
+    cipherfilename: '',
+    isPlainBinary: false,
+    isCipherBinary: false,
     opts: {
       display: 'no-space',
     },
@@ -24,22 +27,35 @@ const App: FC = () => {
     // TODO: Validate
     const value = e.target.value as string;
     const key = e.target.dataset!.key as string;
+    const isEncrypt = key === 'ciphertext';
+    const isDecrypt = key === 'plaintext';
+    const isbinarykey = isEncrypt ? 'isCipherBinary'
+      : isDecrypt ? 'isPlainBinary' : '';
+    const filenamekey = isEncrypt ? 'cipherfilename'
+      : isDecrypt ? 'filename' : '';
 
     setFormData({
       ...formData,
       [key]: value,
+      [isbinarykey]: false,
+      [filenamekey]: '',
     });
   };
 
   const handleFileChange = async (e: any) => {
     const key = e.target.dataset!.key as string;
+    const isEncrypt = key === 'ciphertext';
+    const filenamekey = isEncrypt ? 'cipherfilename' : 'filename';
+    const isbinarykey = isEncrypt ? 'isCipherBinary' : 'isPlainBinary';
+    const isBinary = formData.suite === 'vigenere_ext';
     const file = e.target.files[0] as File;
-    const text = await readFile(file);
+    const text = await readFile(file, isEncrypt, isBinary);
 
     setFormData({
       ...formData,
-      filename: file.name,
+      [filenamekey]: file.name,
       [key]: text,
+      [isbinarykey]: isBinary
     });
   };
 
@@ -51,11 +67,15 @@ const App: FC = () => {
   };
 
   const handleDownload = (e: any) => {
-    const encFilename = formData.filename.length
-      ? formData.filename + '.enc'
-      : 'out.enc';
+    const key = e.target.dataset!.key as string;
+    const isEncrypt = key === 'ciphertext';
+    const isBinary = formData.suite === 'vigenere_ext';
+    let encFilename = formData.filename.length
+      ? formData.filename
+      : 'out';
+    encFilename = encFilename + (isBinary && !isEncrypt ? '' : '.enc');
 
-    downloadAsFile(formData.ciphertext, encFilename);
+    downloadAsFile(isEncrypt ? formData.ciphertext : formData.plaintext, encFilename, isEncrypt, isBinary);
   };
 
   const handleEncrypt = () => {
@@ -68,6 +88,7 @@ const App: FC = () => {
     setFormData({
       ...formData,
       ciphertext,
+      isCipherBinary: false,
     });
   };
 
@@ -81,6 +102,7 @@ const App: FC = () => {
     setFormData({
       ...formData,
       plaintext,
+      isPlainBinary: false,
     });
   };
 
@@ -137,17 +159,22 @@ const App: FC = () => {
                 }
                 onChange={handleFileChange}
                 custom
+                disabled={!formData.suite}
               />
             </Form.Group>
-            <Form.Group controlId='plainTextArea' className='mb-0'>
+            <Form.Group controlId='plainTextArea'>
               <Form.Control
                 as='textarea'
                 data-key='plaintext'
                 rows={3}
-                value={formData.plaintext}
+                value={!formData.isPlainBinary ? formData.plaintext : ''}
+                placeholder={'Type your plaintext here (binary file is not displayed)'}
                 onChange={handleChange}
               />
             </Form.Group>
+            <Button data-key='plaintext' variant='outline-success' block onClick={handleDownload}>
+              Download
+            </Button>
           </Row>
           <hr />
           <Row>
@@ -179,16 +206,31 @@ const App: FC = () => {
           <hr />
           <Row className='mt-3 flex-column'>
             <h5>Ciphertext</h5>
+            <Form.Group>
+              <Form.File
+                id='cipherFile'
+                data-key='ciphertext'
+                label={
+                  formData.cipherfilename.length
+                    ? formData.cipherfilename
+                    : 'Choose ciphertext file'
+                }
+                onChange={handleFileChange}
+                custom
+                disabled={!formData.suite}
+              />
+            </Form.Group>
             <Form.Group controlId='cipherTextArea'>
               <Form.Control
                 as='textarea'
                 data-key='ciphertext'
                 rows={3}
-                value={formData.ciphertext}
+                value={!formData.isCipherBinary ? formData.ciphertext : ''}
+                placeholder={'Type your plaintext here (binary file is not displayed)'}
                 onChange={handleChange}
               />
             </Form.Group>
-            <Button variant='outline-success' block onClick={handleDownload}>
+            <Button data-key='ciphertext' variant='outline-success' block onClick={handleDownload}>
               Download
             </Button>
           </Row>
