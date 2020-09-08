@@ -44,12 +44,21 @@ export class Enigma implements CryptoSuite {
 
     const rotors = ['BDFHJLCPRTXVZNYEIWGAKMUSQO',
       'AJDKSIRUXBLHWTMCQGZNPYFVOE',
-      'EKMFLGDQVZNTOWYHXUSPAIBRCJ']; // III, II, I
-    const rotorNotch = ['V', 'E', 'Q'];
+      'EKMFLGDQVZNTOWYHXUSPAIBRCJ']; // Rotor Type III, II, I
+    const rotorRingSetting = [0, 0, 0];
+    const rotorNotch = ['V', 'E', 'Q']; // Rotor Type III, II, I
     const rotorsCount = rotors.length;
     const reflector = 'YRUHQSLDPXNGOKMIEBFZCWVJAT'; // UKW B
     const plugboard = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // Not plugged
     let keyArr = key.split('');
+
+    for (let i = 0; i < rotorsCount; i++) {
+      if (rotorRingSetting[i] > 0) {
+        const shiftCount = rotorRingSetting[i];
+        let shiftedRotor = rotors[i].split('').map((x) => b26toc((ctob26(x) + shiftCount) % 26)).join('');
+        rotors[i] = [shiftedRotor.slice(26 - shiftCount, 26), shiftedRotor.slice(0, 26 - shiftCount)].join('');
+      }
+    }
 
     for (let i = 0; i < plaintext.length; i++) {
       keyArr = this._incKey(keyArr, rotorNotch);
