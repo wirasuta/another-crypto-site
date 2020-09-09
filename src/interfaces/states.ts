@@ -17,5 +17,15 @@ export interface AppDataState {
   cipherfilename: string;
   isPlainBinary: boolean;
   isCipherBinary: boolean;
+  rotor1: number;
+  rotor2: number;
+  rotor3: number;
+  rotor4: number;
+  ring1: number;
+  ring2: number;
+  ring3: number;
+  ring4: number;
+  reflector: string;
+  plugboard: string;
   opts: OptsType;
 }

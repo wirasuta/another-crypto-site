@@ -29,11 +29,34 @@ export class Enigma implements CryptoSuite {
     }
   }
 
+  private rotorList = [
+    { wiring: 'EKMFLGDQVZNTOWYHXUSPAIBRCJ', notch: 'Q' },
+    { wiring: 'AJDKSIRUXBLHWTMCQGZNPYFVOE', notch: 'E' },
+    { wiring: 'BDFHJLCPRTXVZNYEIWGAKMUSQO', notch: 'V' },
+    { wiring: 'ESOVPZJAYQUIRHXLNFTGKDCMWB', notch: 'J' },
+    { wiring: 'VZBRGITYUPSDNHLXAWMJQOFECK', notch: 'Z' },
+    { wiring: 'JPGVOUMFYQBENHZRDKASXLICTW', notch: 'ZM' },
+    { wiring: 'NZJHGRCXMYSWBOUFAIVLPEKQDT', notch: 'ZM' },
+    { wiring: 'FKQHTLXOCBJSPDZRAMEWNIUYGV', notch: 'ZM' },
+  ];
+
+  private reflectorList = {
+    'ukwa': 'EJMZALYXVBWFCRQUONTSPIKHGD',
+    'ukwb': 'YRUHQSLDPXNGOKMIEBFZCWVJAT',
+    'ukwc': 'FVPJIAOYEDRZXWGCTKUQSBNMHL',
+  }
+
   private _enigmaBase26(
     plaintext: string,
     key: string,
     encrypt: boolean,
-    opts: any
+    opts: {
+      display: string,
+      rotorChoice: Array<number>,
+      ringSetting: Array<string>,
+      refChoice: string,
+      pbInput: string
+    }
   ) {
     const grouped = opts.display === 'grouped';
     const res = [];
@@ -42,14 +65,13 @@ export class Enigma implements CryptoSuite {
       plaintext = ungroupByFive(plaintext);
     }
 
-    const rotors = ['BDFHJLCPRTXVZNYEIWGAKMUSQO',
-      'AJDKSIRUXBLHWTMCQGZNPYFVOE',
-      'EKMFLGDQVZNTOWYHXUSPAIBRCJ']; // Rotor Type III, II, I
-    const rotorRingSetting = [0, 0, 0];
-    const rotorNotch = ['V', 'E', 'Q']; // Rotor Type III, II, I
+    const rotorChoice = opts.rotorChoice.filter(x => x >= 0);
+    const rotors = rotorChoice.map((x) => this.rotorList[x].wiring);
+    const rotorRingSetting = opts.ringSetting.map((x) => parseInt(x));
+    const rotorNotch = rotorChoice.map((x) => this.rotorList[x].notch);
     const rotorsCount = rotors.length;
-    const reflector = 'YRUHQSLDPXNGOKMIEBFZCWVJAT'; // UKW B
-    const plugboard = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'; // Not plugged
+    const reflector = (this.reflectorList as any)[opts.refChoice];
+    const plugboard = this._genPbSeq(opts.pbInput);
     let keyArr = key.split('');
 
     for (let i = 0; i < rotorsCount; i++) {
@@ -111,9 +133,9 @@ export class Enigma implements CryptoSuite {
   private _incKey(keyArr: Array<string>, rotorNotch: Array<string>) {
     const lenKeyArr = keyArr.length;
     const intKeyArr = keyArr.map((x) => ctob26(x));
-    const intRotorNotch = rotorNotch.map((x) => ctob26(x));
+    const intRotorNotch = rotorNotch.map((x) => x.split('').map((y) => ctob26(y)));
 
-    if (intKeyArr[lenKeyArr - 1] === intRotorNotch[lenKeyArr - 1]) {
+    if (intRotorNotch[lenKeyArr - 1].indexOf(intKeyArr[lenKeyArr - 1]) >= 0) {
       intKeyArr[lenKeyArr - 2]++;
     }
     intKeyArr[lenKeyArr - 1]++;
@@ -128,5 +150,19 @@ export class Enigma implements CryptoSuite {
     keyArr = intKeyArr.map((x) => b26toc(x));
 
     return keyArr;
+  }
+
+  private _genPbSeq(rawInput: string) {
+    let seq = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+
+    if (rawInput !== '') {
+      const rawInputArr = rawInput.split(' ');
+      for (let i = 0; i < rawInputArr.length; i++) {
+        seq[ctob26(rawInputArr[i][0])] = rawInputArr[i][1];
+        seq[ctob26(rawInputArr[i][1])] = rawInputArr[i][0];
+      }
+    }
+
+    return seq.join('');
   }
 }
