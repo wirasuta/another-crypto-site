@@ -9,24 +9,14 @@ import {
 } from '../utils';
 
 export class Enigma implements CryptoSuite {
-  encrypt(plaintext: string | ArrayBuffer, key: string, opts: any) {
-    if (typeof plaintext === 'string') {
-      const text = removeNonUppercase(plaintext);
-      return this._enigmaBase26(text, key, true, opts);
-    } else {
-      // TODO: Handle binary
-      return '';
-    }
+  encrypt(plaintext: string, key: string, opts: any) {
+    const text = removeNonUppercase(plaintext);
+    return this._enigmaBase26(text, key, true, opts);
   }
 
-  decrypt(ciphertext: string | ArrayBuffer, key: string, opts: any) {
-    if (typeof ciphertext === 'string') {
-      const text = removeNonUppercase(ciphertext);
-      return this._enigmaBase26(text, key, false, opts);
-    } else {
-      // TODO: Handle binary
-      return '';
-    }
+  decrypt(ciphertext: string, key: string, opts: any) {
+    const text = removeNonUppercase(ciphertext);
+    return this._enigmaBase26(text, key, false, opts);
   }
 
   private rotorList = [
