@@ -9,6 +9,7 @@ import { Playfair } from './playfair';
 import { Super } from './super';
 import { VigenereAuto } from './vigenere_auto';
 import { VigenereFull } from './vigenere_full';
+import { Enigma } from './enigma';
 
 export const useCryptoSuites = () => {
   const [cryptoSuites, setCryptoSuites] = useState<CryptoSuitesState>({});
@@ -23,6 +24,7 @@ export const useCryptoSuites = () => {
       vigenere_ext: new VigenereExt(),
       playfair: new Playfair(),
       super: new Super(),
+      enigma: new Enigma(),
     });
   }, []);
 

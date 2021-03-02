@@ -21,6 +21,16 @@ const App: FC = () => {
     opts: {
       display: 'no-space',
     },
+    rotor1: 0,
+    rotor2: 1,
+    rotor3: 2,
+    rotor4: -1,
+    ring1: 0,
+    ring2: 0,
+    ring3: 0,
+    ring4: 0,
+    reflector: 'ukwa',
+    plugboard: '',
   });
 
   const handleChange = (e: any) => {
@@ -37,13 +47,13 @@ const App: FC = () => {
     const isbinarykey = isEncrypt
       ? 'isCipherBinary'
       : isDecrypt
-      ? 'isPlainBinary'
-      : '';
+        ? 'isPlainBinary'
+        : '';
     const filenamekey = isEncrypt
       ? 'cipherfilename'
       : isDecrypt
-      ? 'filename'
-      : '';
+        ? 'filename'
+        : '';
 
     setFormData({
       ...formData,
@@ -96,7 +106,13 @@ const App: FC = () => {
     const ciphertext = cryptoSuites[formData.suite]?.encrypt(
       formData.plaintext,
       formData.key,
-      formData.opts
+      {
+        ...formData.opts,
+        rotorChoice: [formData.rotor1, formData.rotor2, formData.rotor3, formData.rotor4],
+        ringSetting: [formData.ring1, formData.ring2, formData.ring3, formData.ring4],
+        refChoice: formData.reflector,
+        pbInput: formData.plugboard,
+      }
     );
 
     setFormData({
@@ -110,7 +126,13 @@ const App: FC = () => {
     const plaintext = cryptoSuites[formData.suite]?.decrypt(
       formData.ciphertext,
       formData.key,
-      formData.opts
+      {
+        ...formData.opts,
+        rotorChoice: [formData.rotor1, formData.rotor2, formData.rotor3, formData.rotor4],
+        ringSetting: [formData.ring1, formData.ring2, formData.ring3, formData.ring4],
+        refChoice: formData.reflector,
+        pbInput: formData.plugboard,
+      }
     );
 
     setFormData({
@@ -160,6 +182,109 @@ const App: FC = () => {
               onChange={handleChange}
             />
           </Row>
+          {formData.suite === 'enigma' && <Row className='mt-3'>
+            <Col className='pr-2 pl-0'>
+              <h6>Rotor 1</h6>
+              <Form.Control
+                as='select'
+                data-key='rotor1'
+                value={formData.rotor1}
+                onChange={handleChange}
+              >
+                <option value='0'>I</option>
+                <option value='1'>II</option>
+                <option value='2'>III</option>
+                <option value='3'>IV</option>
+                <option value='4'>V</option>
+                <option value='5'>VI</option>
+                <option value='6'>VII</option>
+                <option value='7'>VIII</option>
+              </Form.Control>
+              <Form.Control className='mt-3' data-key='ring1' value={formData.ring1} onChange={handleChange} />
+            </Col>
+            <Col className='pr-2 pl-2'>
+              <h6>Rotor 2</h6>
+              <Form.Control
+                as='select'
+                data-key='rotor2'
+                value={formData.rotor2}
+                onChange={handleChange}
+              >
+                <option value='0'>I</option>
+                <option value='1'>II</option>
+                <option value='2'>III</option>
+                <option value='3'>IV</option>
+                <option value='4'>V</option>
+                <option value='5'>VI</option>
+                <option value='6'>VII</option>
+                <option value='7'>VIII</option>
+              </Form.Control>
+              <Form.Control className='mt-3' data-key='ring2' value={formData.ring2} onChange={handleChange} />
+            </Col>
+            <Col className='pr-2 pl-2'>
+              <h6>Rotor 3</h6>
+              <Form.Control
+                as='select'
+                data-key='rotor3'
+                value={formData.rotor3}
+                onChange={handleChange}
+              >
+                <option value='0'>I</option>
+                <option value='1'>II</option>
+                <option value='2'>III</option>
+                <option value='3'>IV</option>
+                <option value='4'>V</option>
+                <option value='5'>VI</option>
+                <option value='6'>VII</option>
+                <option value='7'>VIII</option>
+              </Form.Control>
+              <Form.Control className='mt-3' data-key='ring3' value={formData.ring3} onChange={handleChange} />
+            </Col>
+            <Col className='pr-0 pl-2'>
+              <h6>Rotor 4</h6>
+              <Form.Control
+                as='select'
+                data-key='rotor4'
+                value={formData.rotor4}
+                onChange={handleChange}
+              >
+                <option value='-1'>None</option>
+                <option value='0'>I</option>
+                <option value='1'>II</option>
+                <option value='2'>III</option>
+                <option value='3'>IV</option>
+                <option value='4'>V</option>
+                <option value='5'>VI</option>
+                <option value='6'>VII</option>
+                <option value='7'>VIII</option>
+              </Form.Control>
+              <Form.Control className='mt-3' data-key='ring4' value={formData.ring4} onChange={handleChange} />
+            </Col>
+          </Row>}
+          {formData.suite === 'enigma' && <Row className='mt-3'>
+            <Col className='pr-2 pl-0'>
+              <h6>Reflector</h6>
+              <Form.Control
+                as='select'
+                data-key='reflector'
+                value={formData.reflector}
+                onChange={handleChange}
+              >
+                <option value='ukwa'>UKW A</option>
+                <option value='ukwb'>UKW B</option>
+                <option value='ukwc'>UKW C</option>
+              </Form.Control>
+            </Col>
+            <Col className='pr-2 pl-2'>
+              <h6>Plugboard</h6>
+              <Form.Control
+                data-key='plugboard'
+                value={formData.plugboard}
+                onChange={handleChange}
+                placeholder='Pairs of letter to be swapped (e.g. AB CD EF)'
+              />
+            </Col>
+          </Row>}
           <Row className='mt-3 flex-column'>
             <h5>Plaintext</h5>
             <Form.Group>
